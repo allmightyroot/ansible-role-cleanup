@@ -1,0 +1,27 @@
+---
+# defaults file for cleanup
+
+# Cloud default users to remove
+cleanup_cloud_users:
+  - ubuntu
+  - ec2-user
+  - centos
+  - admin
+  - debian
+
+# Directories to clean
+cleanup_log_dirs:
+  - /var/log
+  - /tmp
+  - /var/tmp
+  - /root/.ssh
+
+# AMI metadata
+cleanup_ami_info_file: /etc/ami-info
+cleanup_ami_version: "1.0.0"
+
+# Reset machine-id
+cleanup_reset_machine_id: true
+
+# Clear bash history
+cleanup_clear_bash_history: true

@@ -1,0 +1,25 @@
+---
+# tasks file for cleanup
+
+- name: Remove cloud-init default users
+  include_tasks: remove-default-users.yml
+
+- name: Clear log files
+  include_tasks: clear-logs.yml
+
+- name: Clean temporary files
+  include_tasks: clean-temp.yml
+
+- name: Set AMI metadata
+  include_tasks: set-ami-metadata.yml
+
+- name: Reset machine-id
+  include_tasks: reset-machine-id.yml
+  when: cleanup_reset_machine_id | bool
+
+- name: Clear bash history
+  include_tasks: clear-history.yml
+  when: cleanup_clear_bash_history | bool
+
+- name: Final cleanup tasks
+  include_tasks: final-cleanup.yml

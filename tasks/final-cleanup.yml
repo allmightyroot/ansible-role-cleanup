@@ -1,0 +1,26 @@
+---
+- name: Sync filesystem
+  command: sync
+  changed_when: false
+
+- name: Clear kernel message buffer
+  command: dmesg -c
+  changed_when: false
+  ignore_errors: yes
+
+- name: Remove Ansible facts
+  file:
+    path: /etc/ansible/facts.d
+    state: absent
+  ignore_errors: yes
+
+- name: Final package cleanup (Debian/Ubuntu)
+  apt:
+    autoremove: yes
+    autoclean: yes
+  when: ansible_os_family == "Debian"
+  ignore_errors: yes
+
+- name: Display cleanup completion message
+  debug:
+    msg: "AMI cleanup complete - ready for snapshot"

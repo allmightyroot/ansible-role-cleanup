@@ -1,0 +1,19 @@
+---
+- name: Clear bash history for root
+  file:
+    path: /root/.bash_history
+    state: absent
+
+- name: Clear bash history for all users
+  shell: |
+    for user_home in /home/*; do
+      if [ -d "$user_home" ]; then
+        rm -f "$user_home/.bash_history"
+        rm -f "$user_home/.zsh_history"
+      fi
+    done
+  changed_when: false
+
+- name: Unset HISTFILE for current session
+  shell: unset HISTFILE
+  changed_when: false

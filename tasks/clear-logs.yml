@@ -1,0 +1,35 @@
+---
+- name: Find all log files
+  find:
+    paths: /var/log
+    patterns: '*'
+    recurse: yes
+    file_type: file
+  register: log_files
+
+- name: Truncate log files (preserve file structure)
+  copy:
+    content: ""
+    dest: "{{ item.path }}"
+    force: yes
+  loop: "{{ log_files.files }}"
+  ignore_errors: yes
+
+- name: Clear systemd journal
+  command: journalctl --vacuum-time=1s
+  when: ansible_service_mgr == "systemd"
+  ignore_errors: yes
+
+- name: Remove old log archives
+  find:
+    paths: /var/log
+    patterns: '*.gz,*.1,*.2,*.old'
+    recurse: yes
+  register: old_logs
+
+- name: Delete old log archives
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ old_logs.files }}"
+  ignore_errors: yes

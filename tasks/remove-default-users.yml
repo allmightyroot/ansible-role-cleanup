@@ -1,0 +1,31 @@
+---
+- name: Check if default cloud users exist
+  getent:
+    database: passwd
+    key: "{{ item }}"
+  loop: "{{ cleanup_cloud_users }}"
+  register: user_check
+  failed_when: false
+
+- name: Remove default cloud users
+  user:
+    name: "{{ item.item }}"
+    state: absent
+    remove: yes
+  loop: "{{ user_check.results }}"
+  when: item.ansible_facts is defined
+  ignore_errors: yes
+
+- name: Remove cloud user home directories
+  file:
+    path: "/home/{{ item }}"
+    state: absent
+  loop: "{{ cleanup_cloud_users }}"
+  ignore_errors: yes
+
+- name: Remove cloud user authorized_keys
+  file:
+    path: "/home/{{ item }}/.ssh/authorized_keys"
+    state: absent
+  loop: "{{ cleanup_cloud_users }}"
+  ignore_errors: yes

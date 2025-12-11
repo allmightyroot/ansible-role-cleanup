@@ -7,25 +7,33 @@
   register: user_check
   failed_when: false
 
-- name: Remove default cloud users
+- name: Check current SSH user
+  command: whoami
+  register: current_user
+  changed_when: false
+
+- name: Lock default cloud user accounts (except current user)
   user:
     name: "{{ item.item }}"
-    state: absent
-    remove: yes
+    password_lock: yes
   loop: "{{ user_check.results }}"
-  when: item.ansible_facts is defined
+  when:
+    - item.ansible_facts is defined
+    - item.item != current_user.stdout
   ignore_errors: yes
 
-- name: Remove cloud user home directories
-  file:
-    path: "/home/{{ item }}"
+- name: Remove sudo privileges from default cloud users
+  lineinfile:
+    path: /etc/sudoers.d/90-cloud-init-users
     state: absent
+    regexp: "^{{ item }}"
   loop: "{{ cleanup_cloud_users }}"
   ignore_errors: yes
 
-- name: Remove cloud user authorized_keys
+- name: Clear authorized_keys for default cloud users (except current user)
   file:
     path: "/home/{{ item }}/.ssh/authorized_keys"
     state: absent
   loop: "{{ cleanup_cloud_users }}"
+  when: item != current_user.stdout
   ignore_errors: yes

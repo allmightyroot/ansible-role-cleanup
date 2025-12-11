@@ -1,9 +1,6 @@
 ---
 # tasks file for cleanup
 
-- name: Remove cloud-init default users
-  include_tasks: remove-default-users.yml
-
 - name: Clear log files
   include_tasks: clear-logs.yml
 

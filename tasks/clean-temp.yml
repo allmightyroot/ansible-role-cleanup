@@ -1,7 +1,9 @@
 ---
-- name: Remove contents of /tmp
-  shell: rm -rf /tmp/* /tmp/.[^.]* 2>/dev/null || true
-  changed_when: false
+# /tmp is cleared by the Packer shell provisioner after Ansible exits,
+# so doing it here causes Ansible's own module zip to be deleted mid-execution.
+# - name: Remove contents of /tmp
+#   shell: rm -rf /tmp/* /tmp/.[^.]* 2>/dev/null || true
+#   changed_when: false
 
 - name: Remove contents of /var/tmp
   shell: rm -rf /var/tmp/* /var/tmp/.[^.]* 2>/dev/null || true

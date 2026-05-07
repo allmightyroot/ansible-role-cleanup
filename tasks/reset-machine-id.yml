@@ -4,7 +4,7 @@
     content: ""
     dest: /etc/machine-id
     force: yes
-  when: ansible_service_mgr == "systemd"
+  when: ansible_facts["service_mgr"] == "systemd"
 
 - name: Remove machine-id symlink
   file:
@@ -17,7 +17,7 @@
     src: /etc/machine-id
     dest: /var/lib/dbus/machine-id
     state: link
-  when: ansible_service_mgr == "systemd"
+  when: ansible_facts["service_mgr"] == "systemd"
   ignore_errors: yes
 
 - name: Reset cloud-init state

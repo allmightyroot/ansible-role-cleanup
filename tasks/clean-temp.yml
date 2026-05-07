@@ -13,12 +13,12 @@
   apt:
     autoclean: yes
     autoremove: yes
-  when: ansible_os_family == "Debian"
+  when: ansible_facts["os_family"] == "Debian"
   ignore_errors: yes
 
 - name: Clean zypper cache (openSUSE/SLES)
   command: zypper clean --all
-  when: ansible_os_family == "Suse" and ansible_pkg_mgr == "zypper"
+  when: ansible_facts["os_family"] == "Suse" and ansible_facts["pkg_mgr"] == "zypper"
   changed_when: false
   ignore_errors: yes
 

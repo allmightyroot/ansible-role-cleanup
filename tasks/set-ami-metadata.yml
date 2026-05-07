@@ -2,11 +2,11 @@
 - name: Create AMI metadata file
   copy:
     content: |
-      AMI_BUILD_DATE={{ ansible_date_time.iso8601 }}
+      AMI_BUILD_DATE={{ ansible_facts["date_time"]["iso8601"] }}
       AMI_VERSION={{ cleanup_ami_version }}
-      AMI_OS={{ ansible_distribution }} {{ ansible_distribution_version }}
-      AMI_KERNEL={{ ansible_kernel }}
-      AMI_ARCHITECTURE={{ ansible_architecture }}
+      AMI_OS={{ ansible_facts["distribution"] }} {{ ansible_facts["distribution_version"] }}
+      AMI_KERNEL={{ ansible_facts["kernel"] }}
+      AMI_ARCHITECTURE={{ ansible_facts["architecture"] }}
     dest: "{{ cleanup_ami_info_file }}"
     mode: '0644'
     owner: root

@@ -18,7 +18,7 @@
   apt:
     autoremove: yes
     autoclean: yes
-  when: ansible_os_family == "Debian"
+  when: ansible_facts["os_family"] == "Debian"
   ignore_errors: yes
 
 - name: Display cleanup completion message

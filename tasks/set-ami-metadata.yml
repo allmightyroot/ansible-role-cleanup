@@ -1,6 +1,6 @@
 ---
 - name: Create AMI metadata file
-  copy:
+  ansible.builtin.copy:
     content: |
       AMI_BUILD_DATE={{ ansible_facts["date_time"]["iso8601"] }}
       AMI_VERSION={{ cleanup_ami_version }}
@@ -13,5 +13,5 @@
     group: root
 
 - name: Display AMI metadata
-  debug:
+  ansible.builtin.debug:
     msg: "AMI metadata written to {{ cleanup_ami_info_file }}"

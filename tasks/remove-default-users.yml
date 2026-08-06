@@ -1,6 +1,6 @@
 ---
 - name: Check if default cloud users exist
-  getent:
+  ansible.builtin.getent:
     database: passwd
     key: "{{ item }}"
   loop: "{{ cleanup_cloud_users }}"
@@ -8,32 +8,32 @@
   failed_when: false
 
 - name: Check current SSH user
-  command: whoami
+  ansible.builtin.command: whoami
   register: current_user
   changed_when: false
 
 - name: Lock default cloud user accounts (except current user)
-  user:
+  ansible.builtin.user:
     name: "{{ item.item }}"
-    password_lock: yes
+    password_lock: true
   loop: "{{ user_check.results }}"
   when:
     - item.ansible_facts is defined
     - item.item != current_user.stdout
-  ignore_errors: yes
+  failed_when: false
 
 - name: Remove sudo privileges from default cloud users
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/sudoers.d/90-cloud-init-users
     state: absent
     regexp: "^{{ item }}"
   loop: "{{ cleanup_cloud_users }}"
-  ignore_errors: yes
+  failed_when: false
 
 - name: Clear authorized_keys for default cloud users (except current user)
-  file:
+  ansible.builtin.file:
     path: "/home/{{ item }}/.ssh/authorized_keys"
     state: absent
   loop: "{{ cleanup_cloud_users }}"
   when: item != current_user.stdout
-  ignore_errors: yes
+  failed_when: false

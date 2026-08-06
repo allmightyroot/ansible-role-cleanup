@@ -1,27 +1,28 @@
 ---
 - name: Truncate machine-id (systemd)
-  copy:
+  ansible.builtin.copy:
     content: ""
     dest: /etc/machine-id
-    force: yes
+    force: true
+    mode: "0444"
   when: ansible_facts["service_mgr"] == "systemd"
 
 - name: Remove machine-id symlink
-  file:
+  ansible.builtin.file:
     path: /var/lib/dbus/machine-id
     state: absent
-  ignore_errors: yes
+  failed_when: false
 
 - name: Create machine-id symlink to /etc/machine-id
-  file:
+  ansible.builtin.file:
     src: /etc/machine-id
     dest: /var/lib/dbus/machine-id
     state: link
   when: ansible_facts["service_mgr"] == "systemd"
-  ignore_errors: yes
+  failed_when: false
 
 - name: Reset cloud-init state
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   loop:
@@ -29,4 +30,4 @@
     - /var/lib/cloud/instances
     - /var/log/cloud-init.log
     - /var/log/cloud-init-output.log
-  ignore_errors: yes
+  failed_when: false

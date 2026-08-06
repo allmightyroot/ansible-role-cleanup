@@ -1,35 +1,37 @@
 ---
 - name: Find all log files
-  find:
+  ansible.builtin.find:
     paths: /var/log
     patterns: '*'
-    recurse: yes
+    recurse: true
     file_type: file
   register: log_files
 
 - name: Truncate log files (preserve file structure)
-  copy:
+  ansible.builtin.copy:
     content: ""
     dest: "{{ item.path }}"
-    force: yes
+    force: true
+    mode: "0644"
   loop: "{{ log_files.files }}"
-  ignore_errors: yes
+  failed_when: false
 
 - name: Clear systemd journal
-  command: journalctl --vacuum-time=1s
+  ansible.builtin.command: journalctl --vacuum-time=1s
   when: ansible_facts["service_mgr"] == "systemd"
-  ignore_errors: yes
+  changed_when: false
+  failed_when: false
 
 - name: Remove old log archives
-  find:
+  ansible.builtin.find:
     paths: /var/log
     patterns: '*.gz,*.1,*.2,*.old'
-    recurse: yes
+    recurse: true
   register: old_logs
 
 - name: Delete old log archives
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: absent
   loop: "{{ old_logs.files }}"
-  ignore_errors: yes
+  failed_when: false

@@ -1,26 +1,26 @@
 ---
 - name: Sync filesystem
-  command: sync
+  ansible.builtin.command: sync
   changed_when: false
 
 - name: Clear kernel message buffer
-  command: dmesg -c
+  ansible.builtin.command: dmesg -c
   changed_when: false
-  ignore_errors: yes
+  failed_when: false
 
 - name: Remove Ansible facts
-  file:
+  ansible.builtin.file:
     path: /etc/ansible/facts.d
     state: absent
-  ignore_errors: yes
+  failed_when: false
 
 - name: Final package cleanup (Debian/Ubuntu)
-  apt:
-    autoremove: yes
-    autoclean: yes
+  ansible.builtin.apt:
+    autoremove: true
+    autoclean: true
   when: ansible_facts["os_family"] == "Debian"
-  ignore_errors: yes
+  failed_when: false
 
 - name: Display cleanup completion message
-  debug:
+  ansible.builtin.debug:
     msg: "AMI cleanup complete - ready for snapshot"

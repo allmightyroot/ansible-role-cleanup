@@ -6,27 +6,27 @@
 #   changed_when: false
 
 - name: Remove contents of /var/tmp
-  shell: rm -rf /var/tmp/* /var/tmp/.[^.]* 2>/dev/null || true
+  ansible.builtin.shell: rm -rf /var/tmp/* /var/tmp/.[^.]* 2>/dev/null || true
   changed_when: false
 
 - name: Clean apt cache (Debian/Ubuntu)
-  apt:
-    autoclean: yes
-    autoremove: yes
+  ansible.builtin.apt:
+    autoclean: true
+    autoremove: true
   when: ansible_facts["os_family"] == "Debian"
-  ignore_errors: yes
+  failed_when: false
 
 - name: Clean zypper cache (openSUSE/SLES)
-  command: zypper clean --all
+  ansible.builtin.command: zypper clean --all
   when: ansible_facts["os_family"] == "Suse" and ansible_facts["pkg_mgr"] == "zypper"
   changed_when: false
-  ignore_errors: yes
+  failed_when: false
 
 - name: Remove SSH host keys from known_hosts
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   loop:
     - /root/.ssh/known_hosts
     - /home/*/.ssh/known_hosts
-  ignore_errors: yes
+  failed_when: false
